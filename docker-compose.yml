@@ -1,0 +1,13 @@
+version: '2'
+services:
+  mattermost:
+    image: mattermost/platform:2.0
+    ports:
+      - "80:80"
+  ircd:
+    image: xyproto/matterircd
+    command: -mmserver mattermost -interface 0.0.0.0 -debug -mminsecure=true
+    depends_on:
+      - mattermost
+    ports:
+      - "6667:6667"

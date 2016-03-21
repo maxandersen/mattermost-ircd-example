@@ -1,0 +1,43 @@
+= Quick'n'Dirty mattermost-ircd setup
+
+mattermost provide a slack-like opensource team chat service.
+
+mattermost-ircd lets you have irc access to all the rooms in your chat service.
+
+This doc and associated repo shows you how to run this in docker.
+
+== Starting mattermost + ircd
+
+Two ways, using raw docker commands that link the two containers together or using `docker-compose`.
+
+"Raw" command line:
+
+```
+docker run --name mattermost-dev -it --publish 80:80 mattermost/platform:2.0
+docker run -it -p 6667:6667 --name ircd --link mattermost-dev:mattermost xyproto/matterircd -mmserver mattermost -interface 0.0.0.0 -debug -mminsecure=true
+```
+
+Via docker-compose:
+
+```
+git clone https://github.com/maxandersen/mattermost-ircd-example
+docker-compose up
+```
+
+== Using it
+
+If you have run one of the two above you should now be able to connect to `dockerhost:80` (where `dockerhost` is where you have docker running, on Linux most likely `localhost`). Here you can create your first user and team.
+
+To access mattermost via irc connect to `dockerhost:6667` and send the following message:
+
+`/msg mattermost login <team> <user> <password>`
+
+Where the values within `<>`'s comes from what you provided when using the mattermost webui.
+
+= Disclaimer
+
+On first try I bumped into https://github.com/42wim/matterircd/issues/39[#39] that shows running latest ircd docker did not
+work against latest master, luckily https://github.com/42wim/matterircd/issues/38[#38] helped me fix that.
+
+But it might fail hard soon again if the docker images gets out of sync again.
+
